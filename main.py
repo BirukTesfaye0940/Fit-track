@@ -1,9 +1,16 @@
 from fastapi import FastAPI
-from routers.demo import router as demo_router
+from routers.exercises import router as exercises_router
+
+from db.session import engine
+from db.base import Base
+from models.exercise import Exercise
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.include_router(demo_router)
+
+app.include_router(exercises_router)
 
 @app.get("/")
 async def root():
