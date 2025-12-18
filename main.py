@@ -2,10 +2,14 @@ from fastapi import FastAPI
 from routers.exercises import router as exercises_router
 from routers.auth import router as auth_router
 
+
 from db.session import engine
 from db.base import Base
 from models.exercise import Exercise
 from models.user import User
+from models.workout import Workout
+from models.workout_set import WorkoutSet
+
 
 Base.metadata.create_all(bind=engine)
 
