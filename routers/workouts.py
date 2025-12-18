@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from uuid import UUID
 from sqlalchemy.orm import Session
 from core.pagination import pagination_params
 from fastapi import BackgroundTasks
@@ -40,7 +41,7 @@ def list_workouts(
 
 @router.post("/{workout_id}/finalize")
 def finalize_workout(
-    workout_id: int,
+    workout_id: UUID,
     background_tasks: BackgroundTasks,
     current_user: dict = Depends(get_current_user)
 ):

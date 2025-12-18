@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from uuid import UUID
 
 class WorkoutCreate(BaseModel):
   date: date
@@ -8,7 +9,7 @@ class WorkoutCreate(BaseModel):
   notes: str | None = None
 
 class WorkoutRead(WorkoutCreate):
-  id: int
+  id: UUID
 
   class Config:
     from_attributes = True

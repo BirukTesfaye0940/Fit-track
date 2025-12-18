@@ -1,28 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
+from uuid import UUID
 from sqlalchemy.orm import Session
-
-from jose import JWTError, jwt
-from config import SECRET_KEY, ALGORITHM
+from routers.auth import get_current_user
 
 from db.session import get_db
 from schemas.exercise import ExerciseCreate, ExerciseRead
 from models.exercise import Exercise
+from pathlib import Path
+import shutil
 
 router = APIRouter(prefix="/exercises", tags=["Exercises"])
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+UPLOAD_DIR = Path("uploads")
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-  
-  try:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    username: str = payload.get("sub")
-    if username is None:
-      raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
-    return {"username": username}
-  except JWTError:
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+
 
 @router.post("/", response_model=ExerciseRead)
 def create_exercise(
@@ -39,3 +30,25 @@ def create_exercise(
 @router.get("/", response_model=list[ExerciseRead])
 def list_exercises(db: Session = Depends(get_db)):
   return db.query(Exercise).all()
+
+@router.post("/{exercise_id}/image")
+def upload_exercise_image(
+  exercise_id: UUID,
+  file: UploadFile = File(...),
+  db: Session = Depends(get_db),
+  current_user: dict = Depends(get_current_user)
+):
+  exercise = db.query(Exercise).filter(Exercise.id == exercise_id, Exercise.user_id == current_user["id"]).first()
+  if not exercise:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+  if not file.content_type.startswith("image/"):
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+  
+  file_path = UPLOAD_DIR / f"exercise_image_{exercise_id}.jpg"
+
+  with file_path.open("wb") as buffer:
+    shutil.copyfileobj(file.file, buffer)
+  exercise.image_path = str(file_path)
+  db.commit()
+  return {"image_url": f"/media/exercise_image_{exercise_id}.jpg"}
+  

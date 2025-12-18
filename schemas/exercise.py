@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from uuid import UUID
 
 class ExerciseCreate(BaseModel):
   name:str
@@ -6,7 +7,7 @@ class ExerciseCreate(BaseModel):
   equipment: str
 
 class ExerciseRead(ExerciseCreate):
-  id: int
+  id: UUID
 
   class Config:
     from_attributes = True

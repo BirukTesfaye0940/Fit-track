@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from uuid import UUID
 from sqlalchemy.orm import Session
 from core.ownership import get_owned_workout
 
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/workout-sets", tags=["Workout Sets"])
 
 @router.post("/workouts/{workout_id}/sets", response_model=WorkoutSetRead)
 def add_set(
-    workout_id: int,
+    workout_id: UUID,
     workout_set: WorkoutSetCreate,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)

@@ -1,14 +1,15 @@
 from pydantic import BaseModel
+from uuid import UUID
 
 class WorkoutSetCreate(BaseModel):
-  exercise_id: int
+  exercise_id: UUID
   reps: int
   weight: int
   rpe: int | None = None
 
 class WorkoutSetRead(WorkoutSetCreate):
-  id: int
-  workout_id: int
+  id: UUID
+  workout_id: UUID
 
   class Config:
     from_attributes = True
