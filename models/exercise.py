@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base_class import Base
@@ -14,3 +14,4 @@ class Exercise(Base):
   equipment: Mapped[str] = mapped_column(String(50))
 
   image_path: Mapped[str | None] = mapped_column(String, nullable=True)
+  ai_generated: Mapped[bool] = mapped_column(Boolean, default=False)

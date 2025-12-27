@@ -5,6 +5,7 @@ from routers.auth import router as auth_router
 from routers.workouts import router as workouts_router
 from routers.workout_sets import router as workout_sets_router
 from routers.stats import router as stats_router
+from routers.ai_workouts import router as ai_workouts_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,6 +31,7 @@ app.include_router(auth_router)
 app.include_router(workouts_router)
 app.include_router(workout_sets_router)
 app.include_router(stats_router)
+app.include_router(ai_workouts_router)
 
 @app.get("/")
 async def root():
