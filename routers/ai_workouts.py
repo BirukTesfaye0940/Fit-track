@@ -16,7 +16,7 @@ def log_workout_nl(
   db: Session = Depends(get_db),
   current_user: dict = Depends(get_current_user)
 ):
-  parsed = parse_workout_text(payload["text"])
+  parsed = parse_workout_text(payload.text)
   workout, created_exercises = build_workout(
     db=db, 
     user_id=current_user["id"], 
