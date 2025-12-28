@@ -1,6 +1,11 @@
 # FitTrack API
 
-FitTrack is a powerful and modern fitness tracking API built with FastAPI. It allows users to track their workouts, monitor progress through weekly statistics, and manage a custom database of exercises with image support.
+FitTrack is a powerful, **AI-driven** fitness tracking API built with FastAPI. It goes beyond simple data logging by integrating **Google Gemini** via a custom **Model Context Protocol (MCP)** architecture.
+
+This allows users to:
+- 🗣️ **Log workouts naturally**: Just say "Bench press 3x8 at 80kg", and the AI parses exercises, sets, and weights instantly.
+- 🧠 **Receive intelligent coaching**: The Agentic AI analyzes weekly volume and intensity (RPE) to provide personalized training feedback and actionable advice.
+- 📊 **Track progress effortlessly**: Automatically aggregates data into meaningful weekly statistics.
 
 ## 🚀 Features
 
