@@ -11,19 +11,48 @@ def generate_text(prompt: str) -> str:
 
 def parse_workout_text(text: str) -> ParsedWorkout:
   prompt = f"""
-    You are a fitness assistant.
-Parse the workout text into structured JSON.
+You are a fitness assistant. Parse the workout text into structured JSON matching this exact schema:
+
+{{
+  "date": "YYYY-MM-DD" or null,
+  "notes": "optional notes" or null,
+  "exercises": [
+    {{
+      "name": "exercise name",
+      "muscle_group": "inferred muscle group (REQUIRED)",
+      "equipment": "inferred equipment (REQUIRED)",
+      "sets": number,
+      "reps": number,
+      "weight": number (in kg),
+      "rpe": number (1-10) or null,
+      "confidence": number (0.0-1.0)
+    }}
+  ]
+}}
 
 Rules:
-- Output ONLY valid JSON
+- Output ONLY valid JSON matching the schema above
+- Do NOT wrap in markdown code fences
 - Do not invent exercises
-- Confidence between 0 and 1
+- Confidence between 0 and 1 (1.0 = certain)
+- If date is not mentioned, use null
+- ALWAYS infer muscle group and equipment from the exercise name (e.g. "Bench Press" -> "Chest", "Barbell")
 
 Workout text:
 {text}
   """
   response = model.generate_content(prompt)
-  return ParsedWorkout.model_validate_json(response.text)
+  
+  # Strip markdown code fences if present
+  json_text = response.text.strip()
+  if json_text.startswith("```"):
+    # Remove opening fence
+    json_text = json_text.split("\n", 1)[1] if "\n" in json_text else json_text[3:]
+    # Remove closing fence
+    if json_text.endswith("```"):
+      json_text = json_text.rsplit("\n```", 1)[0]
+  
+  return ParsedWorkout.model_validate_json(json_text)
 
 def weekly_coach_feedback(signals: dict) -> str:
   prompt = f"""

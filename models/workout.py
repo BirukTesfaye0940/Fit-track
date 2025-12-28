@@ -12,7 +12,7 @@ class Workout(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     date: Mapped[date] = mapped_column(Date, nullable=False)
-    duration_minutes: Mapped[int] = mapped_column(Integer)
+    duration_minutes: Mapped[int | None] = mapped_column(Integer)
     mood: Mapped[str | None] = mapped_column(String(50))
     notes: Mapped[str | None] = mapped_column(String(255))
 

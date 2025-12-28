@@ -25,15 +25,15 @@ def build_workout(db, user_id, parsed_workout: ParsedWorkout):
         exercise_id=exercise.id,
         reps=ex.reps,
         weight=ex.weight,
-        rpe=ex.rest_time,
+        rpe=ex.rpe,
       )
       db.add(ws)
       
-      if created:
-        created_exercises.append({
-          "name": ex.name,
-          "confidence": ex.confidence,
-        })
+    if created:
+      created_exercises.append({
+        "name": ex.name,
+        "confidence": ex.confidence,
+      })
   db.commit()
   return workout, created_exercises
   

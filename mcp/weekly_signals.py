@@ -41,10 +41,8 @@ def get_weekly_signals(db: Session, user_id):
     for muscle, volume, _ in sets
   }
 
-  avg_rpe = round(
-    sum(rpe for _, _, rpe in sets if rpe is not None) / len(sets),
-    2
-  ) if sets else None
+  valid_rpes = [rpe for _, _, rpe in sets if rpe is not None]
+  avg_rpe = round(sum(valid_rpes) / len(valid_rpes), 2) if valid_rpes else None
 
   return {
     "worked_out": True,
