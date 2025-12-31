@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from uuid import UUID
 from sqlalchemy.orm import Session
 from core.ownership import get_owned_workout
@@ -6,7 +6,7 @@ from core.ownership import get_owned_workout
 
 from db.session import get_db
 from models.workout_set import WorkoutSet
-from schemas.workout_set import WorkoutSetCreate, WorkoutSetRead
+from schemas.workout_set import WorkoutSetCreate, WorkoutSetRead, WorkoutSetUpdate
 from routers.auth import get_current_user
 
 router = APIRouter(prefix="/workout-sets", tags=["Workout Sets"])
@@ -25,4 +25,58 @@ def add_set(
     db.commit()
     db.refresh(db_set)
     return db_set
+
+
+@router.patch("/{set_id}", response_model=WorkoutSetRead)
+def update_set(
+    set_id: UUID,
+    set_update: WorkoutSetUpdate,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    # Join with Workout to check ownership
+    workout_set = (
+        db.query(WorkoutSet)
+        .join(WorkoutSet.workout)
+        .filter(WorkoutSet.id == set_id, Workout.user_id == current_user["id"])
+        .first()
+    )
+
+    if not workout_set:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Workout set not found"
+        )
+    
+    update_data = set_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(workout_set, key, value)
+
+    db.commit()
+    db.refresh(workout_set)
+    return workout_set
+
+
+@router.delete("/{set_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_set(
+    set_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    # Join with Workout to check ownership
+    workout_set = (
+        db.query(WorkoutSet)
+        .join(WorkoutSet.workout)
+        .filter(WorkoutSet.id == set_id, Workout.user_id == current_user["id"])
+        .first()
+    )
+
+    if not workout_set:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Workout set not found"
+        )
+
+    db.delete(workout_set)
+    db.commit()
 

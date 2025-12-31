@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from routers.auth import get_current_user
 
 from db.session import get_db
-from schemas.exercise import ExerciseCreate, ExerciseRead
+from schemas.exercise import ExerciseCreate, ExerciseRead, ExerciseUpdate
 from models.exercise import Exercise
+from models.workout_set import WorkoutSet
 from pathlib import Path
 import shutil
 
@@ -51,4 +52,44 @@ def upload_exercise_image(
   exercise.image_path = str(file_path)
   db.commit()
   return {"image_url": f"/media/exercise_image_{exercise_id}.jpg"}
+
+@router.patch("/{id}", response_model=ExerciseRead)
+def update_exercise(
+  id: UUID,
+  exercise_update: ExerciseUpdate,
+  db: Session = Depends(get_db),
+  current_user: dict = Depends(get_current_user)
+):
+  exercise = db.query(Exercise).filter(Exercise.id == id).first()
+  if not exercise:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+  
+  update_data = exercise_update.dict(exclude_unset=True)
+  for key, value in update_data.items():
+    setattr(exercise, key, value)
+    
+  db.commit()
+  db.refresh(exercise)
+  return exercise
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_exercise(
+  id: UUID,
+  db: Session = Depends(get_db),
+  current_user: dict = Depends(get_current_user)
+):
+  exercise = db.query(Exercise).filter(Exercise.id == id).first()
+  if not exercise:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+  
+  # Check if exercise is used in any workouts
+  exercise_usage = db.query(WorkoutSet).filter(WorkoutSet.exercise_id == id).first()
+  if exercise_usage:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="Cannot delete exercise because it is being used in workouts."
+    )
+  
+  db.delete(exercise)
+  db.commit()
   

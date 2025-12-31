@@ -13,3 +13,10 @@ class WorkoutRead(WorkoutCreate):
 
   class Config:
     from_attributes = True
+
+from typing import Optional
+class WorkoutUpdate(BaseModel):
+  date: Optional[date] = None
+  duration_minutes: Optional[int] = None
+  mood: Optional[str] = None
+  notes: Optional[str] = None

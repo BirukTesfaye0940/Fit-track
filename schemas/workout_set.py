@@ -13,3 +13,8 @@ class WorkoutSetRead(WorkoutSetCreate):
 
   class Config:
     from_attributes = True
+
+class WorkoutSetUpdate(BaseModel):
+  reps: int | None = None
+  weight: int | None = None
+  rpe: int | None = None
