@@ -12,8 +12,6 @@ def get_weekly_stats(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    if (db.query(WeeklyStats).filter(WeeklyStats.user_id == current_user["id"]).count() == 0):
-        raise FitTrackException("No completed sets this week!!")
     return (
         db.query(WeeklyStats)
         .filter(WeeklyStats.user_id == current_user["id"])

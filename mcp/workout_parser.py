@@ -24,7 +24,7 @@ def build_workout(db, user_id, parsed_workout: ParsedWorkout):
         workout_id=workout.id,
         exercise_id=exercise.id,
         reps=ex.reps,
-        weight=ex.weight,
+        weight=ex.weight or 0,
         rpe=ex.rpe,
       )
       db.add(ws)

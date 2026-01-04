@@ -23,7 +23,7 @@ You are a fitness assistant. Parse the workout text into structured JSON matchin
       "equipment": "inferred equipment (REQUIRED)",
       "sets": number,
       "reps": number,
-      "weight": number (in kg),
+      "weight": number (in kg) or null,
       "rpe": number (1-10) or null,
       "confidence": number (0.0-1.0)
     }}

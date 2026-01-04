@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -13,6 +14,6 @@ class ExerciseRead(ExerciseCreate):
     from_attributes = True
 
 class ExerciseUpdate(BaseModel):
-  name: str | None = None
-  muscle_group: str | None = None
-  equipment: str | None = None
+  name: Optional[str] = None
+  muscle_group: Optional[str] = None
+  equipment: Optional[str] = None

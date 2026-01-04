@@ -6,10 +6,31 @@ from core.ownership import get_owned_workout
 
 from db.session import get_db
 from models.workout_set import WorkoutSet
+from models.workout import Workout
 from schemas.workout_set import WorkoutSetCreate, WorkoutSetRead, WorkoutSetUpdate
 from routers.auth import get_current_user
 
 router = APIRouter(prefix="/workout-sets", tags=["Workout Sets"])
+
+@router.get("/{set_id}", response_model=WorkoutSetRead)
+def get_set(
+    set_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    workout_set = (
+        db.query(WorkoutSet)
+        .join(WorkoutSet.workout)
+        .filter(WorkoutSet.id == set_id, Workout.user_id == current_user["id"])
+        .first()
+    )
+
+    if not workout_set:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Workout set not found"
+        )
+    return workout_set
 
 @router.post("/workouts/{workout_id}/sets", response_model=WorkoutSetRead)
 def add_set(

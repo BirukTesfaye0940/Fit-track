@@ -9,7 +9,7 @@ class ParsedExercise(BaseModel):
   equipment: Optional[str]
   sets: int
   reps: int
-  weight: int
+  weight: Optional[int] = None
   rpe: Optional[int]
   confidence: float
 

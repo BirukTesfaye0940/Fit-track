@@ -32,6 +32,16 @@ def create_exercise(
 def list_exercises(db: Session = Depends(get_db)):
   return db.query(Exercise).all()
 
+@router.get("/{id}", response_model=ExerciseRead)
+def get_exercise(
+  id: UUID,
+  db: Session = Depends(get_db)
+):
+  exercise = db.query(Exercise).filter(Exercise.id == id).first()
+  if not exercise:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+  return exercise
+
 @router.post("/{exercise_id}/image")
 def upload_exercise_image(
   exercise_id: UUID,

@@ -16,3 +16,4 @@ class WorkoutSet(Base):
     rpe: Mapped[int | None] = mapped_column(Integer)
 
     workout = relationship("Workout", back_populates="sets")
+    exercise = relationship("Exercise")
