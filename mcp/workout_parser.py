@@ -8,6 +8,8 @@ def build_workout(db, user_id, parsed_workout: ParsedWorkout):
   workout = Workout(
     user_id=user_id,
     date=parsed_workout.date or date.today(),
+    duration_minutes=parsed_workout.duration_minutes,
+    mood=parsed_workout.mood,
     notes=parsed_workout.notes,
   )
   db.add(workout)

@@ -15,6 +15,8 @@ class ParsedExercise(BaseModel):
 
 class ParsedWorkout(BaseModel):
   date: Optional[date]
+  duration_minutes: Optional[int]
+  mood: Optional[str]
   notes: Optional[str]
   exercises: List[ParsedExercise]
   

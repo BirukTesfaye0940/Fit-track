@@ -15,7 +15,9 @@ You are a fitness assistant. Parse the workout text into structured JSON matchin
 
 {{
   "date": "YYYY-MM-DD" or null,
-  "notes": "optional notes" or null,
+  "duration_minutes": number or null,
+  "mood": "mood description" or null,
+  "notes": "any remaining text or additional notes" or null,
   "exercises": [
     {{
       "name": "exercise name",
@@ -32,6 +34,9 @@ You are a fitness assistant. Parse the workout text into structured JSON matchin
 
 Rules:
 - Output ONLY valid JSON matching the schema above
+- Extract "duration_minutes" if mentioned (e.g. "45 mins", "1 hour")
+- Extract "mood" description if mentioned (e.g. "feeling great", "tired but pushed through")
+- Put all remaining non-parsed text into "notes"
 - Do NOT wrap in markdown code fences
 - Do not invent exercises
 - Confidence between 0 and 1 (1.0 = certain)
@@ -70,6 +75,6 @@ Your task:
 Rules:
 - No medical advice
 - Be practical and encouraging
-- Max 120 words
+- Max 50 words
 """
   return generate_text(prompt)
